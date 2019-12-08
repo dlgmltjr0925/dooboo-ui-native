@@ -108,6 +108,8 @@ yarn add @dooboo-ui/native-select
       placeholder={'select'}
       onClick={action('Clicked')}
       items={ITEMS}
+      onSelect={onSelect}
+      selectedItem={selectedItem}
     />
   </Container>
   ```
