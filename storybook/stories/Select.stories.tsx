@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { ContainerDeco } from '../decorators';
 import Select from '../../src/components/shared/Select';
 import { action } from '@storybook/addon-actions';
+import { grey } from 'ansi-colors';
 import { storiesOf } from '@storybook/react-native';
 import styled from 'styled-components/native';
 import { text } from '@storybook/addon-knobs';
@@ -20,11 +21,16 @@ const Container = styled.View`
   align-items: center;
   justify-content: center;
   width: 100%;
-  margin-top: 28;
-  padding-top: 80;
-
   flex-direction: column;
 `;
+
+const ITEMS = [
+  { value: 'Category1', text: 'Category1' },
+  { value: 'Category2', text: 'Category2' },
+  { value: 'Category3', text: 'Category3' },
+  { value: 'Category4', text: 'Category4' },
+  { value: 'Category5', text: 'Category5' },
+];
 
 function Default(): React.ReactElement {
   return (
@@ -38,8 +44,18 @@ function Default(): React.ReactElement {
         rootTextStyle={{
           color: 'orange',
         }}
+        itemStyle={{
+          list: {},
+          defaultItem: {
+            color: 'grey',
+          },
+          selectedItem: {
+            color: 'black',
+          },
+        }}
         placeholder={'select'}
         onClick={action('Clicked')}
+        items={ITEMS}
       />
     </Container>
   );
