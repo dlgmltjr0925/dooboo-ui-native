@@ -1,5 +1,5 @@
-import { IC_ARR_DOWN, IC_ARR_UP } from '../Icons';
 import {
+  FlatList,
   Image,
   ShadowStyleIOS,
   StyleProp,
@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ViewStyle,
 } from 'react-native';
+import { IC_ARR_DOWN, IC_ARR_UP } from '../Icons';
 import React, { useCallback, useState } from 'react';
 import styled, { DefaultTheme } from 'styled-components/native';
 
@@ -72,6 +73,14 @@ interface TextThemeType extends DefaultTheme {
     fontColor: string;
   };
 }
+interface ListItemThemeType extends DefaultTheme {
+  listItem: {
+    backgroundColor: string;
+    boxShadow?: BoxShadowType;
+    border?: BorderStyle;
+    fontColor: string;
+  };
+}
 // interface CompStyleType {
 //   rootbox: RootBoxThemeType;
 //   text: TextThemeType;
@@ -94,11 +103,15 @@ interface ViewType {
 interface TextType {
   theme: ThemeEnum;
 }
+interface Selected {
+  selected: boolean;
+}
 
 export const TESTID = {
   ROOTSELECT: 'root-select',
   ROOTTEXT: 'root-text',
   ROOTARROW: 'root-arrow',
+  SELECTLIST: 'list',
 };
 
 const COLOR: {
@@ -114,6 +127,8 @@ const COLOR: {
   GRAY7: '#121212',
   GRAY59: '#969696',
   DARK: '#09071d',
+  LIGHTBLUE: '#bcdbfb',
+  BLACK: '#000000',
 };
 
 export const themeStylePropCollection: ThemeType<
@@ -183,6 +198,7 @@ const getThemeProp = ({
   return themeStylePropCollection[theme][comp][prop];
 };
 
+const SelectContainer = styled.View``;
 const Text = styled.Text<TextType>`
   font-size: 14px;
   color: ${({ theme }: { theme: ThemeEnum }): ThemeProp =>
@@ -219,16 +235,47 @@ const RootSelect = styled.View<ViewType>`
   align-items: center;
   padding: 14px 6px;
 `;
+const SelectList = styled(FlatList)`
+  background-color: ${COLOR.WHITE};
+  position: absolute;
+  top: 100%;
+  left: 0;
+  padding-top: 8px;
+`;
+const ItemView = styled.TouchableOpacity<Selected>`
+  background-color: ${({ selected }: { selected: boolean }): string =>
+    selected ? COLOR.LIGHTBLUE : COLOR.WHITE};
+  width: 128px;
+  height: 32px;
+  padding: 6px;
+  justify-content: center;
+`;
+const ItemText = styled.Text<Selected>`
+  font-size: 14px;
+  color: ${COLOR.BLACK};
+`;
+
+interface Item {
+  value: string;
+  text: string;
+}
+
+interface ItemStyle {
+  list?: StyleProp<DefaultTheme>;
+  defaultItem?: StyleProp<DefaultTheme>;
+  selectedItem?: StyleProp<DefaultTheme>;
+}
 
 interface Props {
   testID?: string;
-  items: string;
   theme?: ThemeEnum;
   rootViewStyle?: StyleProp<ViewStyle>;
   rootTextStyle?: StyleProp<TextStyle>;
-  placeholder?: boolean;
+  placeholder?: string;
   activeOpacity: number;
   disabled?: boolean;
+  items: Item[];
+  itemStyle?: ItemStyle;
 }
 
 function Select(props: Props): React.ReactElement {
@@ -240,6 +287,8 @@ function Select(props: Props): React.ReactElement {
     placeholder,
     activeOpacity,
     disabled,
+    items,
+    itemStyle,
   } = props;
 
   const [listOpen, setListOpen] = useState<boolean>(false);
@@ -250,6 +299,15 @@ function Select(props: Props): React.ReactElement {
     [listOpen],
   );
 
+  const [selectedItem, setSelectedItem] = useState<Item>(null);
+  const handleSelect = useCallback(
+    (item: Item) => {
+      setSelectedItem(item);
+    },
+    [selectedItem],
+  );
+
+  // const isThemeEmpty = theme === null || theme === undefined || theme === '';
   const defaultTheme = !theme ? 'none' : theme;
   const rootViewTheme =
     !rootViewStyle || Object.keys(rootViewStyle).length > 0
@@ -260,8 +318,35 @@ function Select(props: Props): React.ReactElement {
       ? 'blank'
       : defaultTheme;
 
+  const renderItem = ({ item }: { item: Item }): React.ReactElement => {
+    return (
+      <ItemView
+        style={
+          selectedItem && selectedItem.value === item.value
+            ? itemStyle.selectedItem
+            : itemStyle.defaultItem
+        }
+        selected={selectedItem && selectedItem.value === item.value}
+        activeOpacity={1}
+        onPress={(): void => {
+          handleSelect(item);
+        }}
+      >
+        <ItemText
+          selected={selectedItem && selectedItem.value === item.value}
+          style={
+            selectedItem && selectedItem.value === item.value
+              ? itemStyle.selectedItem
+              : itemStyle.defaultItem
+          }
+        >
+          {item.text}
+        </ItemText>
+      </ItemView>
+    );
+  };
   return (
-    <>
+    <SelectContainer>
       <TouchableOpacity
         testID={testID}
         activeOpacity={activeOpacity}
@@ -278,7 +363,7 @@ function Select(props: Props): React.ReactElement {
             style={rootTextStyle}
             testID={`${testID}-${TESTID.ROOTTEXT}`}
           >
-            {placeholder}
+            {selectedItem ? selectedItem.text : placeholder}
           </Text>
           <Image
             source={!listOpen ? IC_ARR_DOWN : IC_ARR_UP}
@@ -286,8 +371,16 @@ function Select(props: Props): React.ReactElement {
           />
         </RootSelect>
       </TouchableOpacity>
-      {listOpen && <Text theme={rootTextTheme}>{'list item here!!'}</Text>}
-    </>
+      {listOpen && (
+        <SelectList
+          testID={`${testID}-${TESTID.SELECTLIST}`}
+          data={items}
+          renderItem={renderItem}
+          keyExtractor={({ value }: { value: string }): string => value}
+          style={itemStyle.list}
+        />
+      )}
+    </SelectContainer>
   );
 }
 
