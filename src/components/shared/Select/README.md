@@ -10,7 +10,7 @@
 |                  | necessary | types                      | default |
 | ---------------- | --------- | -------------------------- | ------- |
 | testID           |           | string                     |         |
-| label            |           | string                     |         |
+| title            |           | string                     |         |
 | items            | ✓         | array                      |         |
 | placeholder      |           | string                     |         |
 | [theme](#theme)  |           | 'none', 'underbar', 'box'  | 'none'  |
@@ -27,6 +27,9 @@
 - injecting some value to prop `theme`, the other prop `rootViewStyle` doesn't work.
   - `theme` & `rootTextStyle` props work
 - if you want to `rootViewStyle` work, make `theme` prop empty
+
+#### title
+- This is a data for a title or label which appear on the top of select box.
 
 #### onFocus
 ...onFocus

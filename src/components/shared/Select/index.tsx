@@ -5,6 +5,7 @@ import {
   StyleProp,
   TextStyle,
   TouchableOpacity,
+  View,
   ViewStyle,
 } from 'react-native';
 import React, { useCallback, useState } from 'react';
@@ -96,6 +97,7 @@ interface TextType {
 }
 
 export const TESTID = {
+  TITLE: 'title',
   ROOTSELECT: 'root-select',
   ROOTTEXT: 'root-text',
   ROOTARROW: 'root-arrow',
@@ -222,6 +224,8 @@ const RootSelect = styled.View<ViewType>`
 
 interface Props {
   testID?: string;
+  title: string;
+  titleTextStyle?: StyleProp<TextStyle>;
   items: string;
   theme?: ThemeEnum;
   rootViewStyle?: StyleProp<ViewStyle>;
@@ -234,6 +238,8 @@ interface Props {
 function Select(props: Props): React.ReactElement {
   const {
     testID,
+    title,
+    titleTextStyle,
     theme,
     rootViewStyle,
     rootTextStyle,
@@ -260,33 +266,46 @@ function Select(props: Props): React.ReactElement {
     !rootTextStyle || Object.keys(rootTextStyle).length > 0
       ? 'blank'
       : defaultTheme;
+  const titleTextTheme =
+    !rootTextStyle || Object.keys(titleTextStyle).length > 0
+      ? 'blank'
+      : defaultTheme;
 
   return (
     <>
-      <TouchableOpacity
-        testID={testID}
-        activeOpacity={activeOpacity}
-        onPress={toggleList}
-        disabled={disabled}
-      >
-        <RootSelect
-          theme={rootViewTheme}
-          style={rootViewStyle}
-          testID={`${testID}-${TESTID.ROOTSELECT}`}
+      <View>
+        <Text
+          theme={titleTextTheme}
+          style={titleTextStyle}
+          testID={`${testID}-${TESTID.TITLE}`}
         >
-          <Text
-            theme={rootTextTheme}
-            style={rootTextStyle}
-            testID={`${testID}-${TESTID.ROOTTEXT}`}
+          {title}
+        </Text>
+        <TouchableOpacity
+          testID={testID}
+          activeOpacity={activeOpacity}
+          onPress={toggleList}
+          disabled={disabled}
+        >
+          <RootSelect
+            theme={rootViewTheme}
+            style={rootViewStyle}
+            testID={`${testID}-${TESTID.ROOTSELECT}`}
           >
-            {placeholder}
-          </Text>
-          <Image
-            source={!listOpen ? IC_ARR_DOWN : IC_ARR_UP}
-            testID={`${testID}-${TESTID.ROOTARROW}`}
-          />
-        </RootSelect>
-      </TouchableOpacity>
+            <Text
+              theme={rootTextTheme}
+              style={rootTextStyle}
+              testID={`${testID}-${TESTID.ROOTTEXT}`}
+            >
+              {placeholder}
+            </Text>
+            <Image
+              source={!listOpen ? IC_ARR_DOWN : IC_ARR_UP}
+              testID={`${testID}-${TESTID.ROOTARROW}`}
+            />
+          </RootSelect>
+        </TouchableOpacity>
+      </View>
       {listOpen && <Text theme={rootTextTheme}>{'list item here!!'}</Text>}
     </>
   );

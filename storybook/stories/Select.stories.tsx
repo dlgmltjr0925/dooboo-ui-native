@@ -30,6 +30,11 @@ function Default(): React.ReactElement {
   return (
     <Container>
       <Select
+        title={'title sample :)'}
+        titleTextStyle={{
+          color: 'black',
+          marginRight: 'auto',
+        }}
         theme={'underbar'}
         rootViewStyle={{
           borderBottomColor: 'black',
