@@ -190,7 +190,9 @@ const getThemeProp = ({
   return themeStylePropCollection[theme][comp][prop];
 };
 
-const SelectContainer = styled.View``;
+const SelectContainer = styled.View`
+  z-index: 1;
+`;
 const Text = styled.Text<TextType>`
   font-size: 14px;
   color: ${({ theme }: { theme: ThemeEnum }): ThemeProp =>
