@@ -1,7 +1,7 @@
 import {
   FlatList,
   Image,
-  ShadowStyleIOS,
+  ListRenderItemInfo,
   StyleProp,
   TextStyle,
   TouchableOpacity,
@@ -11,7 +11,9 @@ import { IC_ARR_DOWN, IC_ARR_UP } from '../Icons';
 import React, { useCallback, useState } from 'react';
 import styled, { DefaultTheme, css } from 'styled-components/native';
 
-enum ThemeEnum {
+import { FlattenSimpleInterpolation } from 'styled-components';
+
+export enum ThemeEnum {
   blank = 'blank',
   none = 'none',
   box = 'box',
@@ -29,9 +31,17 @@ enum StylePropEnum {
   border = 'border',
 }
 
-interface BoxShadowType extends ShadowStyleIOS {
-  elevation: number;
-}
+// interface FlattenSimpleInterpolation extends ShadowStyleIOS {
+//   elevation: number;
+//   shadowColor: string;
+//   shadowOffset: {
+//     width: number;
+//     height: number;
+//   };
+//   shadowOpacity: number;
+//   shadowRadius: number;
+// }
+
 interface BorderStyle extends ViewStyle {
   borderColor?: string;
   borderWidth?: number;
@@ -48,35 +58,41 @@ interface BorderStyle extends ViewStyle {
 interface RootBoxThemeType extends DefaultTheme {
   rootbox: {
     backgroundColor: string;
-    boxShadow?: BoxShadowType;
+    boxShadow?: FlattenSimpleInterpolation;
     border?: BorderStyle;
   };
 }
+
 interface TextThemeType extends DefaultTheme {
   text: {
     fontColor: string;
   };
 }
-interface ListItemThemeType extends DefaultTheme {
-  listItem: {
-    backgroundColor: string;
-    boxShadow?: BoxShadowType;
-    border?: BorderStyle;
-    fontColor: string;
-  };
-}
+
+// interface ListItemThemeType extends DefaultTheme {
+//   listItem: {
+//     backgroundColor: string;
+//     boxShadow?: FlattenSimpleInterpolation;
+//     border?: BorderStyle;
+//     fontColor: string;
+//   };
+// }
+
 interface ThemeType<T> extends DefaultTheme {
   blank: T;
   none: T;
   box: T;
   underbar: T;
 }
+
 interface ViewType {
   theme: ThemeEnum;
 }
+
 interface TextType {
   theme: ThemeEnum;
 }
+
 interface Selected {
   selected: boolean;
 }
@@ -108,10 +124,11 @@ const COLOR: {
 const bsCss = css`
   elevation: 1;
   shadow-color: ${COLOR.DODGERBLUE};
-  shadow-offset: {width: 3, height: 3};
+  shadow-offset: { width: 3; height: 3; };
   shadow-opacity: 0.5;
   shadow-radius: 5;
 `;
+
 export const themeStylePropCollection: ThemeType<
   RootBoxThemeType | TextThemeType
 > = {
@@ -158,20 +175,25 @@ export const themeStylePropCollection: ThemeType<
   },
 };
 
-type ThemeStylePropType = BoxShadowType | BorderStyle;
+// type ThemeStylePropType = FlattenSimpleInterpolation | BorderStyle;
+
 interface ThemePropParams {
   theme: ThemeEnum;
   comp: CompEnum;
   prop: StylePropEnum;
 }
-const getThemeProp = ({ theme, comp, prop }: ThemePropParams): string | ThemeStylePropType => {
+
+const getThemeProp = ({ theme, comp, prop }: ThemePropParams): string => {
   return themeStylePropCollection[theme][comp][prop];
 };
+
 const getThemeTextProp = ({ theme, comp, prop }: ThemePropParams): string => {
   return themeStylePropCollection[theme][comp][prop];
 };
 
-const SelectContainer = styled.View``;
+const SelectContainer = styled.View`
+  z-index: 1;
+`;
 const Text = styled.Text<TextType>`
   font-size: 14px;
   color: ${(props): string =>
@@ -188,14 +210,14 @@ const RootSelect = styled.View<ViewType>`
       theme: props.theme,
       comp: CompEnum.rootbox,
       prop: StylePropEnum.bc,
-    })}
-  ${(props): BoxShadowType =>
+    })};
+  ${(props): string =>
     getThemeProp({
       theme: props.theme,
       comp: CompEnum.rootbox,
       prop: StylePropEnum.bs,
     })}
-  ${(props): BorderStyle =>
+  ${(props): string =>
     getThemeProp({
       theme: props.theme,
       comp: CompEnum.rootbox,
@@ -208,19 +230,28 @@ const RootSelect = styled.View<ViewType>`
   align-items: center;
   padding: 14px 6px;
 `;
+
 const SelectListView = styled.View`
   elevation: 8;
   shadow-color: ${COLOR.DODGERBLUE};
-  shadow-offset: { width: 0, height: 5 };
+  shadow-offset: { width: 0; height: 5; };
   shadow-opacity: 0.2;
 `;
-const SelectList = styled(FlatList)`
+
+
+interface Item {
+  value: string;
+  text: string;
+}
+
+const SelectList = styled(FlatList as new () => FlatList<Item>)`
   background-color: ${COLOR.WHITE};
   position: absolute;
   top: 100%;
   left: 0;
   padding-top: 8px;
 `;
+
 const ItemView = styled.TouchableOpacity<Selected>`
   background-color: ${({ selected }: { selected: boolean }): string =>
     selected ? COLOR.LIGHTBLUE : COLOR.WHITE};
@@ -229,15 +260,12 @@ const ItemView = styled.TouchableOpacity<Selected>`
   padding: 6px;
   justify-content: center;
 `;
+
 const ItemText = styled.Text<Selected>`
   font-size: 14px;
   color: ${COLOR.BLACK};
 `;
 
-interface Item {
-  value: string;
-  text: string;
-}
 
 interface ItemStyle {
   list?: StyleProp<DefaultTheme>;
@@ -275,12 +303,9 @@ function Select(props: Props): React.ReactElement {
   } = props;
 
   const [listOpen, setListOpen] = useState<boolean>(false);
-  const toggleList = useCallback(
-    (e) => {
-      setListOpen(!listOpen);
-    },
-    [listOpen],
-  );
+  const toggleList = useCallback(() => {
+    setListOpen(!listOpen);
+  }, [listOpen]);
 
   const handleSelect = (item: Item): void => {
     onSelect(item);
@@ -297,14 +322,15 @@ function Select(props: Props): React.ReactElement {
       ? 'blank'
       : defaultTheme;
 
-  const renderItem = ({ item }: { item: Item }): React.ReactElement => {
+  const renderItem = ({ item }: ListRenderItemInfo<Item>): React.ReactElement => {
+    const style = itemStyle
+      ? selectedItem && selectedItem.value === item.value
+        ? itemStyle.selectedItem
+        : itemStyle.defaultItem
+      : {};
     return (
       <ItemView
-        style={
-          selectedItem && selectedItem.value === item.value
-            ? itemStyle.selectedItem
-            : itemStyle.defaultItem
-        }
+        style={style}
         selected={selectedItem && selectedItem.value === item.value}
         activeOpacity={1}
         onPress={(): void => {
@@ -315,8 +341,8 @@ function Select(props: Props): React.ReactElement {
           selected={selectedItem && selectedItem.value === item.value}
           style={
             selectedItem && selectedItem.value === item.value
-              ? itemStyle.selectedItem
-              : itemStyle.defaultItem
+              ? itemStyle && itemStyle.selectedItem
+              : itemStyle && itemStyle.defaultItem
           }
         >
           {item.text}
@@ -351,13 +377,13 @@ function Select(props: Props): React.ReactElement {
         </RootSelect>
       </TouchableOpacity>
       {listOpen && (
-        <SelectListView style={itemStyle.list}>
+        <SelectListView style={itemStyle && itemStyle.list}>
           <SelectList
-            style={itemStyle.defaultItem}
+            style={itemStyle && itemStyle.defaultItem}
             testID={`${testID}-${TESTID.SELECTLIST}`}
             data={items}
             renderItem={renderItem}
-            keyExtractor={({ value }: { value: string }): string => value}
+            keyExtractor={(item: Item, index: number): string => item.value}
           />
         </SelectListView>
       )}
