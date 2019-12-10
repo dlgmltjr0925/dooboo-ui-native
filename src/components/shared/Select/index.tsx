@@ -31,17 +31,6 @@ enum StylePropEnum {
   border = 'border',
 }
 
-// interface FlattenSimpleInterpolation extends ShadowStyleIOS {
-//   elevation: number;
-//   shadowColor: string;
-//   shadowOffset: {
-//     width: number;
-//     height: number;
-//   };
-//   shadowOpacity: number;
-//   shadowRadius: number;
-// }
-
 interface BorderStyle extends ViewStyle {
   borderColor?: string;
   borderWidth?: number;
@@ -55,7 +44,7 @@ interface BorderStyle extends ViewStyle {
   borderTopWidth?: number;
 }
 
-interface RootBoxThemeType extends DefaultTheme {
+interface RootBoxTheme extends DefaultTheme {
   rootbox: {
     backgroundColor: string;
     boxShadow?: FlattenSimpleInterpolation;
@@ -63,7 +52,7 @@ interface RootBoxThemeType extends DefaultTheme {
   };
 }
 
-interface TextThemeType extends DefaultTheme {
+interface TextTheme extends DefaultTheme {
   text: {
     fontColor: string;
   };
@@ -78,18 +67,14 @@ interface TextThemeType extends DefaultTheme {
 //   };
 // }
 
-interface ThemeType<T> extends DefaultTheme {
+interface ThemeStyle<T> extends DefaultTheme {
   blank: T;
   none: T;
   box: T;
   underbar: T;
 }
 
-interface ViewType {
-  theme: ThemeEnum;
-}
-
-interface TextType {
+interface ThemeType {
   theme: ThemeEnum;
 }
 
@@ -129,8 +114,8 @@ const bsCss = css`
   shadow-radius: 5;
 `;
 
-export const themeStylePropCollection: ThemeType<
-  RootBoxThemeType | TextThemeType
+export const themeStylePropCollection: ThemeStyle<
+  RootBoxTheme | TextTheme
 > = {
   blank: {
     rootbox: {
@@ -175,8 +160,6 @@ export const themeStylePropCollection: ThemeType<
   },
 };
 
-// type ThemeStylePropType = FlattenSimpleInterpolation | BorderStyle;
-
 interface ThemePropParams {
   theme: ThemeEnum;
   comp: CompEnum;
@@ -187,24 +170,20 @@ const getThemeProp = ({ theme, comp, prop }: ThemePropParams): string => {
   return themeStylePropCollection[theme][comp][prop];
 };
 
-const getThemeTextProp = ({ theme, comp, prop }: ThemePropParams): string => {
-  return themeStylePropCollection[theme][comp][prop];
-};
-
 const SelectContainer = styled.View`
   z-index: 1;
 `;
-const Text = styled.Text<TextType>`
+const Text = styled.Text<ThemeType>`
   font-size: 14px;
   color: ${(props): string =>
-    getThemeTextProp({
+    getThemeProp({
       theme: props.theme,
       comp: CompEnum.text,
       prop: StylePropEnum.fc,
     })};
 `;
 
-const RootSelect = styled.View<ViewType>`
+const RootSelect = styled.View<ThemeType>`
   background-color: ${(props): string =>
     getThemeProp({
       theme: props.theme,
@@ -238,7 +217,6 @@ const SelectListView = styled.View`
   shadow-opacity: 0.2;
 `;
 
-
 interface Item {
   value: string;
   text: string;
@@ -265,7 +243,6 @@ const ItemText = styled.Text<Selected>`
   font-size: 14px;
   color: ${COLOR.BLACK};
 `;
-
 
 interface ItemStyle {
   list?: StyleProp<DefaultTheme>;
