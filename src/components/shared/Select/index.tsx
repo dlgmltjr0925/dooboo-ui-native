@@ -5,6 +5,7 @@ import {
   StyleProp,
   TextStyle,
   TouchableOpacity,
+  View,
   ViewStyle,
 } from 'react-native';
 import { IC_ARR_DOWN, IC_ARR_UP } from '../Icons';
@@ -83,6 +84,7 @@ interface Selected {
 }
 
 export const TESTID = {
+  TITLE: 'title',
   ROOTSELECT: 'root-select',
   ROOTTEXT: 'root-text',
   ROOTARROW: 'root-arrow',
@@ -252,6 +254,8 @@ interface ItemStyle {
 
 interface Props {
   testID?: string;
+  title: string;
+  titleTextStyle?: StyleProp<TextStyle>;
   theme?: ThemeEnum;
   rootViewStyle?: StyleProp<ViewStyle>;
   rootTextStyle?: StyleProp<TextStyle>;
@@ -267,6 +271,8 @@ interface Props {
 function Select(props: Props): React.ReactElement {
   const {
     testID,
+    title,
+    titleTextStyle,
     theme,
     rootViewStyle,
     rootTextStyle,
@@ -296,6 +302,10 @@ function Select(props: Props): React.ReactElement {
       : defaultTheme;
   const rootTextTheme =
     rootTextStyle && Object.keys(rootTextStyle).length > 0
+      ? 'blank'
+      : defaultTheme;
+  const titleTextTheme =
+    !rootTextStyle || Object.keys(titleTextStyle).length > 0
       ? 'blank'
       : defaultTheme;
 
@@ -329,6 +339,13 @@ function Select(props: Props): React.ReactElement {
   };
   return (
     <SelectContainer>
+      <Text
+        theme={titleTextTheme}
+        style={titleTextStyle}
+        testID={`${testID}-${TESTID.TITLE}`}
+      >
+        {title}
+      </Text>
       <TouchableOpacity
         testID={testID}
         activeOpacity={activeOpacity}
@@ -340,11 +357,7 @@ function Select(props: Props): React.ReactElement {
           style={rootViewStyle}
           testID={`${testID}-${TESTID.ROOTSELECT}`}
         >
-          <Text
-            theme={rootTextTheme}
-            style={rootTextStyle}
-            testID={`${testID}-${TESTID.ROOTTEXT}`}
-          >
+          <Text>
             {selectedItem ? selectedItem.text : placeholder}
           </Text>
           <Image
