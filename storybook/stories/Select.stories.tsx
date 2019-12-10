@@ -88,17 +88,12 @@ function CustomProps(): React.ReactElement {
   const [selectedItem, setSelectedItem] = useState<Item>(null);
   const onSelect = useCallback(
     (item: Item) => {
-      action(`${GROUP_ID}: onSelect`);
       setSelectedItem(item);
     },
     [selectedItem],
   );
-  const onShow = (): void => {
-    action(`${GROUP_ID}: onShow`);
-  };
-  const onDismiss = (): void => {
-    action(`${GROUP_ID}: onDismiss`);
-  };
+  const onShow = action(`${GROUP_ID}: onShow`);
+  const onDismiss = action(`${GROUP_ID}: onDismiss`);
 
   const title = text('title', 'title', GROUP_ID);
   const titleTextStyle = object('titleTextStyle', {}, GROUP_ID);
@@ -120,7 +115,7 @@ function CustomProps(): React.ReactElement {
     disabled,
     items: ITEMS,
     itemStyle,
-    onSelect,
+    onSelect: action(`${GROUP_ID}: onSelect`)(onSelect),
     selectedItem,
     onShow,
     onDismiss,

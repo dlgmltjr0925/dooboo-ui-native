@@ -101,7 +101,10 @@ const COLOR: {
 const bsCss = css`
   elevation: 1;
   shadow-color: ${COLOR.DODGERBLUE};
-  shadow-offset: { width: 3; height: 3; };
+  shadow-offset: {
+    width: 3;
+    height: 3;
+  }
   shadow-opacity: 0.5;
   shadow-radius: 5;
 `;
@@ -203,7 +206,10 @@ const RootSelect = styled.View<ThemeType>`
 const SelectListView = styled.View`
   elevation: 8;
   shadow-color: ${COLOR.DODGERBLUE};
-  shadow-offset: { width: 0; height: 5; };
+  shadow-offset: {
+    width: 0;
+    height: 5;
+  }
   shadow-opacity: 0.2;
 `;
 
@@ -302,7 +308,9 @@ function Select(props: Props): React.ReactElement {
       ? 'blank'
       : defaultTheme;
 
-  const renderItem = ({ item }: ListRenderItemInfo<Item>): React.ReactElement => {
+  const renderItem = ({
+    item,
+  }: ListRenderItemInfo<Item>): React.ReactElement => {
     const style = itemStyle
       ? selectedItem && selectedItem.value === item.value
         ? itemStyle.selectedItem
