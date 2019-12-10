@@ -5,7 +5,6 @@ import {
   StyleProp,
   TextStyle,
   TouchableOpacity,
-  View,
   ViewStyle,
 } from 'react-native';
 import { IC_ARR_DOWN, IC_ARR_UP } from '../Icons';
@@ -59,15 +58,6 @@ interface TextTheme extends DefaultTheme {
   };
 }
 
-// interface ListItemThemeType extends DefaultTheme {
-//   listItem: {
-//     backgroundColor: string;
-//     boxShadow?: FlattenSimpleInterpolation;
-//     border?: BorderStyle;
-//     fontColor: string;
-//   };
-// }
-
 interface ThemeStyle<T> extends DefaultTheme {
   blank: T;
   none: T;
@@ -116,9 +106,7 @@ const bsCss = css`
   shadow-radius: 5;
 `;
 
-export const themeStylePropCollection: ThemeStyle<
-  RootBoxTheme | TextTheme
-> = {
+export const themeStylePropCollection: ThemeStyle<RootBoxTheme | TextTheme> = {
   blank: {
     rootbox: {
       backgroundColor: 'transparent',
@@ -254,18 +242,20 @@ interface ItemStyle {
 
 interface Props {
   testID?: string;
-  title: string;
+  title?: string;
   titleTextStyle?: StyleProp<TextStyle>;
   theme?: ThemeEnum;
   rootViewStyle?: StyleProp<ViewStyle>;
   rootTextStyle?: StyleProp<TextStyle>;
   placeholder?: string;
-  activeOpacity: number;
+  activeOpacity?: number;
   disabled?: boolean;
   items: Item[];
   itemStyle?: ItemStyle;
-  onSelect: (Item) => void;
-  selectedItem: Item;
+  onSelect?: (item: Item) => void;
+  selectedItem?: Item;
+  onShow?: () => void;
+  onDismiss?: () => void;
 }
 
 function Select(props: Props): React.ReactElement {
@@ -283,11 +273,14 @@ function Select(props: Props): React.ReactElement {
     itemStyle,
     onSelect,
     selectedItem,
+    onShow,
+    onDismiss,
   } = props;
 
   const [listOpen, setListOpen] = useState<boolean>(false);
   const toggleList = useCallback(() => {
     setListOpen(!listOpen);
+    !listOpen ? onShow && onShow() : onDismiss && onDismiss();
   }, [listOpen]);
 
   const handleSelect = (item: Item): void => {
@@ -357,7 +350,7 @@ function Select(props: Props): React.ReactElement {
           style={rootViewStyle}
           testID={`${testID}-${TESTID.ROOTSELECT}`}
         >
-          <Text>
+          <Text theme={rootTextTheme} style={rootTextStyle} testID={`${testID}-${TESTID.ROOTTEXT}`}>
             {selectedItem ? selectedItem.text : placeholder}
           </Text>
           <Image
