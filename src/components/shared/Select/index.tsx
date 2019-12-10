@@ -73,14 +73,6 @@ interface TextThemeType extends DefaultTheme {
     fontColor: string;
   };
 }
-interface ListItemThemeType extends DefaultTheme {
-  listItem: {
-    backgroundColor: string;
-    boxShadow?: BoxShadowType;
-    border?: BorderStyle;
-    fontColor: string;
-  };
-}
 // interface CompStyleType {
 //   rootbox: RootBoxThemeType;
 //   text: TextThemeType;
@@ -302,12 +294,9 @@ function Select(props: Props): React.ReactElement {
   } = props;
 
   const [listOpen, setListOpen] = useState<boolean>(false);
-  const toggleList = useCallback(
-    (e) => {
-      setListOpen(!listOpen);
-    },
-    [listOpen],
-  );
+  const toggleList = useCallback(() => {
+    setListOpen(!listOpen);
+  }, [listOpen]);
 
   const handleSelect = (item: Item): void => {
     onSelect(item);
@@ -326,13 +315,14 @@ function Select(props: Props): React.ReactElement {
       : defaultTheme;
 
   const renderItem = ({ item }: { item: Item }): React.ReactElement => {
+    const style = itemStyle
+      ? selectedItem && selectedItem.value === item.value
+        ? itemStyle.selectedItem
+        : itemStyle.defaultItem
+      : {};
     return (
       <ItemView
-        style={
-          selectedItem && selectedItem.value === item.value
-            ? itemStyle.selectedItem
-            : itemStyle.defaultItem
-        }
+        style={style}
         selected={selectedItem && selectedItem.value === item.value}
         activeOpacity={1}
         onPress={(): void => {
@@ -341,11 +331,7 @@ function Select(props: Props): React.ReactElement {
       >
         <ItemText
           selected={selectedItem && selectedItem.value === item.value}
-          style={
-            selectedItem && selectedItem.value === item.value
-              ? itemStyle.selectedItem
-              : itemStyle.defaultItem
-          }
+          style={style}
         >
           {item.text}
         </ItemText>
@@ -379,13 +365,13 @@ function Select(props: Props): React.ReactElement {
         </RootSelect>
       </TouchableOpacity>
       {listOpen && (
-        <SelectListView style={itemStyle.list}>
+        <SelectListView style={itemStyle && itemStyle.list}>
           <SelectList
-            style={itemStyle.defaultItem}
+            style={itemStyle && itemStyle.defaultItem}
             testID={`${testID}-${TESTID.SELECTLIST}`}
             data={items}
             renderItem={renderItem}
-            keyExtractor={({ value }: { value: string }): string => value}
+            keyExtractor={(item: Item, index: number): string => item.value}
           />
         </SelectListView>
       )}
