@@ -19,7 +19,7 @@
 | rootViewStyle         |           | ViewStyle                                                            |         |
 | rootTextStyle         |           | TextStyle                                                            |         |
 | itemStyle             |           | { list: ViewStyle, defaultItem: ViewStyle, selectedItem: ViewStyle } |         |
-| disabled              |           | boolean                                                              | `false` |
+| disabled              |           | boolean                                                              | false   |
 | [onFocus](#onFocus)   |           | func                                                                 |         |
 | [onBlur](#onBlur)     |           | func                                                                 |         |
 | [onSelect](#onSelect) | ✓         | func                                                                 |         |
@@ -88,7 +88,7 @@ yarn add @dooboo-ui/native-select
   ```jsx
   <Container>
     <Select
-      theme={'underbar'}
+      theme={'underbar' | 'box'}
       rootViewStyle={{
         borderBottomColor: 'black',
         borderBottomWidth: 2,
