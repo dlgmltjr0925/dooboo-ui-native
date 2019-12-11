@@ -15,6 +15,7 @@ import styled, { DefaultTheme, css } from 'styled-components/native';
 import { FlattenSimpleInterpolation } from 'styled-components';
 
 export enum ThemeEnum {
+  disabled = 'disabled',
   blank = 'blank',
   none = 'none',
   box = 'box',
@@ -60,6 +61,7 @@ interface TextTheme extends DefaultTheme {
 }
 
 interface ThemeStyle<T> extends DefaultTheme {
+  disabled: T;
   blank: T;
   none: T;
   box: T;
@@ -111,6 +113,18 @@ const bsCss = css`
 `;
 
 export const themeStylePropCollection: ThemeStyle<RootBoxTheme | TextTheme> = {
+  disabled: {
+    rootbox: {
+      backgroundColor: 'transparent',
+      border: {
+        borderBottomColor: COLOR.LIGHTGRAY,
+        borderBottomWidth: 2,
+      },
+    },
+    text: {
+      fontColor: COLOR.LIGHTGRAY,
+    },
+  },
   blank: {
     rootbox: {
       backgroundColor: 'transparent',
@@ -297,13 +311,15 @@ function Select(props: Props): React.ReactElement {
     setListOpen(false);
   };
 
-  const defaultTheme = !theme ? 'none' : theme;
-  const rootViewTheme =
-    rootViewStyle && Object.keys(rootViewStyle).length > 0
+  const defaultTheme = disabled ? 'disabled' : !theme ? 'none' : theme;
+  const rootViewTheme = disabled
+    ? 'disabled'
+    : rootViewStyle && Object.keys(rootViewStyle).length > 0
       ? 'blank'
       : defaultTheme;
-  const rootTextTheme =
-    rootTextStyle && Object.keys(rootTextStyle).length > 0
+  const rootTextTheme = disabled
+    ? 'disabled'
+    : rootTextStyle && Object.keys(rootTextStyle).length > 0
       ? 'blank'
       : defaultTheme;
   const titleTextTheme =
@@ -311,6 +327,8 @@ function Select(props: Props): React.ReactElement {
       ? 'blank'
       : defaultTheme;
 
+  const _rootViewStyle = disabled ? null : rootViewStyle;
+  const _rootTextStyle = disabled ? null : rootTextStyle;
   const renderItem = ({
     item,
   }: ListRenderItemInfo<Item>): React.ReactElement => {
@@ -365,10 +383,14 @@ function Select(props: Props): React.ReactElement {
       >
         <RootSelect
           theme={rootViewTheme}
-          style={rootViewStyle}
+          style={_rootViewStyle}
           testID={`${testID}-${TESTID.ROOTSELECT}`}
         >
-          <Text theme={rootTextTheme} style={rootTextStyle} testID={`${testID}-${TESTID.ROOTTEXT}`}>
+          <Text
+            theme={rootTextTheme}
+            style={_rootTextStyle}
+            testID={`${testID}-${TESTID.ROOTTEXT}`}
+          >
             {selectedItem ? selectedItem.text : placeholder}
           </Text>
           <Image
