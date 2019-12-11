@@ -2,6 +2,7 @@ import {
   FlatList,
   Image,
   ListRenderItemInfo,
+  Modal,
   StyleProp,
   TextStyle,
   TouchableOpacity,
@@ -219,16 +220,16 @@ interface Item {
 
 const SelectList = styled(FlatList as new () => FlatList<Item>)`
   background-color: ${COLOR.WHITE};
-  position: absolute;
-  top: 100%;
-  left: 0;
   padding-top: 8px;
+`;
+
+const RootCloseView = styled.TouchableOpacity`
+  width: 100%;
 `;
 
 const ItemView = styled.TouchableOpacity<Selected>`
   background-color: ${({ selected }: { selected: boolean }): string =>
     selected ? COLOR.LIGHTBLUE : COLOR.WHITE};
-  width: 128px;
   height: 32px;
   padding: 6px;
   justify-content: center;
@@ -260,6 +261,7 @@ interface Props {
 }
 
 function Select(props: Props): React.ReactElement {
+  const selectRef = React.createRef();
   const {
     testID,
     theme,
@@ -275,6 +277,7 @@ function Select(props: Props): React.ReactElement {
   } = props;
 
   const [listOpen, setListOpen] = useState<boolean>(false);
+  const [layout, setLayout] = useState<object>({});
   const toggleList = useCallback(() => {
     setListOpen(!listOpen);
   }, [listOpen]);
@@ -325,7 +328,14 @@ function Select(props: Props): React.ReactElement {
     );
   };
   return (
-    <SelectContainer>
+    <SelectContainer
+      ref={selectRef}
+      onLayout={() => {
+        selectRef.current.measure((ox, oy, width, height, px, py) => {
+          setLayout({ ox, oy, px, py, width, height });
+        });
+      }}
+    >
       <TouchableOpacity
         testID={testID}
         activeOpacity={activeOpacity}
@@ -350,8 +360,23 @@ function Select(props: Props): React.ReactElement {
           />
         </RootSelect>
       </TouchableOpacity>
-      {listOpen && (
-        <SelectListView style={itemStyle && itemStyle.list}>
+      <Modal
+        visible={listOpen}
+        onRequestClose={(): void => {
+          setListOpen(false);
+        }}
+        transparent={true}
+      >
+        <SelectListView
+          style={[
+            itemStyle && itemStyle.list,
+            { top: layout.py, left: layout.px, width: layout.width },
+          ]}
+        >
+          <RootCloseView
+            onPress={toggleList}
+            style={{ height: layout.height }}
+          ></RootCloseView>
           <SelectList
             style={itemStyle && itemStyle.defaultItem}
             testID={`${testID}-${TESTID.SELECTLIST}`}
@@ -360,7 +385,7 @@ function Select(props: Props): React.ReactElement {
             keyExtractor={(item: Item, index: number): string => item.value}
           />
         </SelectListView>
-      )}
+      </Modal>
     </SelectContainer>
   );
 }
