@@ -361,6 +361,13 @@ function Select(props: Props): React.ReactElement {
   };
   return (
     <SelectContainer ref={selectRef} onLayout={getLayout}>
+      <Text
+        theme={titleTextTheme}
+        style={titleTextStyle}
+        testID={`${testID}-${TESTID.TITLE}`}
+      >
+        {title}
+      </Text>
       <TouchableOpacity
         testID={testID}
         activeOpacity={activeOpacity}
@@ -409,7 +416,7 @@ function Select(props: Props): React.ReactElement {
             testID={`${testID}-${TESTID.SELECTLIST}`}
             data={items}
             renderItem={renderItem}
-            keyExtractor={(item: Item, index: number): string => item.value}
+            keyExtractor={(item: Item): string => item.value}
           />
         </SelectListView>
       </Modal>

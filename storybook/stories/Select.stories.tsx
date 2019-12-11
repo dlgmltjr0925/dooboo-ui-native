@@ -66,7 +66,7 @@ const StyledScrollView = styled.ScrollView`
 
 const RowContainer = styled.View`
   flex-direction: row;
-  height: ${HEIGHT / 4};
+  height: ${HEIGHT / 3};
 `;
 
 const SelectContainer = styled.View`
@@ -115,7 +115,7 @@ function CustomProps(): React.ReactElement {
     disabled,
     items: ITEMS,
     itemStyle,
-    onSelect: action(`${GROUP_ID}: onSelect`)(onSelect),
+    onSelect: onSelect,
     selectedItem,
     onShow,
     onDismiss,
