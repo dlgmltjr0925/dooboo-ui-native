@@ -330,7 +330,7 @@ function Select(props: Props): React.ReactElement {
   return (
     <SelectContainer
       ref={selectRef}
-      onLayout={() => {
+      onLayout={(): void => {
         selectRef.current.measure((ox, oy, width, height, px, py) => {
           setLayout({ ox, oy, px, py, width, height });
         });
