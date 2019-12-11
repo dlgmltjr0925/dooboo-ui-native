@@ -14,6 +14,7 @@ import styled, { DefaultTheme, css } from 'styled-components/native';
 import { FlattenSimpleInterpolation } from 'styled-components';
 
 export enum ThemeEnum {
+  disabled = 'disabled',
   blank = 'blank',
   none = 'none',
   box = 'box',
@@ -68,6 +69,7 @@ interface TextTheme extends DefaultTheme {
 // }
 
 interface ThemeStyle<T> extends DefaultTheme {
+  disabled: T;
   blank: T;
   none: T;
   box: T;
@@ -109,14 +111,27 @@ const COLOR: {
 const bsCss = css`
   elevation: 1;
   shadow-color: ${COLOR.DODGERBLUE};
-  shadow-offset: { width: 3; height: 3; };
+  shadow-offset: {
+    width: 3;
+    height: 3;
+  }
   shadow-opacity: 0.5;
   shadow-radius: 5;
 `;
 
-export const themeStylePropCollection: ThemeStyle<
-  RootBoxTheme | TextTheme
-> = {
+export const themeStylePropCollection: ThemeStyle<RootBoxTheme | TextTheme> = {
+  disabled: {
+    rootbox: {
+      backgroundColor: 'transparent',
+      border: {
+        borderBottomColor: COLOR.LIGHTGRAY,
+        borderBottomWidth: 2,
+      },
+    },
+    text: {
+      fontColor: COLOR.LIGHTGRAY,
+    },
+  },
   blank: {
     rootbox: {
       backgroundColor: 'transparent',
@@ -213,7 +228,10 @@ const RootSelect = styled.View<ThemeType>`
 const SelectListView = styled.View`
   elevation: 8;
   shadow-color: ${COLOR.DODGERBLUE};
-  shadow-offset: { width: 0; height: 5; };
+  shadow-offset: {
+    width: 0;
+    height: 5;
+  }
   shadow-opacity: 0.2;
 `;
 
@@ -289,17 +307,22 @@ function Select(props: Props): React.ReactElement {
     setListOpen(false);
   };
 
-  const defaultTheme = !theme ? 'none' : theme;
-  const rootViewTheme =
-    rootViewStyle && Object.keys(rootViewStyle).length > 0
+  const defaultTheme = disabled ? 'disabled' : !theme ? 'none' : theme;
+  const rootViewTheme = disabled
+    ? 'disabled'
+    : rootViewStyle && Object.keys(rootViewStyle).length > 0
       ? 'blank'
       : defaultTheme;
-  const rootTextTheme =
-    rootTextStyle && Object.keys(rootTextStyle).length > 0
+  const rootTextTheme = disabled
+    ? 'disabled'
+    : rootTextStyle && Object.keys(rootTextStyle).length > 0
       ? 'blank'
       : defaultTheme;
-
-  const renderItem = ({ item }: ListRenderItemInfo<Item>): React.ReactElement => {
+  const _rootViewStyle = disabled ? null : rootViewStyle;
+  const _rootTextStyle = disabled ? null : rootTextStyle;
+  const renderItem = ({
+    item,
+  }: ListRenderItemInfo<Item>): React.ReactElement => {
     const style = itemStyle
       ? selectedItem && selectedItem.value === item.value
         ? itemStyle.selectedItem
@@ -337,12 +360,12 @@ function Select(props: Props): React.ReactElement {
       >
         <RootSelect
           theme={rootViewTheme}
-          style={rootViewStyle}
+          style={_rootViewStyle}
           testID={`${testID}-${TESTID.ROOTSELECT}`}
         >
           <Text
             theme={rootTextTheme}
-            style={rootTextStyle}
+            style={_rootTextStyle}
             testID={`${testID}-${TESTID.ROOTTEXT}`}
           >
             {selectedItem ? selectedItem.text : placeholder}
