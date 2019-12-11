@@ -8,12 +8,6 @@ import { action } from '@storybook/addon-actions';
 import { storiesOf } from '@storybook/react-native';
 import styled from 'styled-components/native';
 
-<<<<<<< HEAD
-=======
-storiesOf('Select', module)
-  .addDecorator(ContainerDeco)
-  .add('default', () => <Default />);
->>>>>>> weonhee/feat/select
 interface Item {
   value: string;
   text: string;
