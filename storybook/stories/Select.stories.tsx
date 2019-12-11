@@ -8,7 +8,7 @@ import styled from 'styled-components/native';
 
 storiesOf('Select', module)
   .addDecorator(ContainerDeco)
-  .add('default', () => (<Default />));
+  .add('default', () => <Default />);
 interface Item {
   value: string;
   text: string;
@@ -41,15 +41,10 @@ function Default(): React.ReactElement {
     <Container>
       <Select
         itemStyle={{
-          list: {
-            shadowOffset: { width: 0, height: 5 },
-          },
-          defaultItem: {
-            color: 'grey',
-          },
-          selectedItem: {
-            color: 'black',
-          },
+          color: 'grey',
+        }}
+        selectedItemStyle={{
+          color: 'black',
         }}
         placeholder={'select'}
         onClick={action('Clicked')}
@@ -60,15 +55,10 @@ function Default(): React.ReactElement {
       <Select
         theme={ThemeEnum.box}
         itemStyle={{
-          list: {
-            shadowOffset: { width: 0, height: 5 },
-          },
-          defaultItem: {
-            color: 'grey',
-          },
-          selectedItem: {
-            color: 'black',
-          },
+          color: 'grey',
+        }}
+        selectedItemStyle={{
+          color: 'black',
         }}
         placeholder={'select'}
         onClick={action('Clicked')}
@@ -79,15 +69,10 @@ function Default(): React.ReactElement {
       <Select
         theme={ThemeEnum.underbar}
         itemStyle={{
-          list: {
-            shadowOffset: { width: 0, height: 5 },
-          },
-          defaultItem: {
-            color: 'grey',
-          },
-          selectedItem: {
-            color: 'black',
-          },
+          color: 'grey',
+        }}
+        selectedItemStyle={{
+          color: 'black',
         }}
         placeholder={'select'}
         onClick={action('Clicked')}
@@ -104,15 +89,10 @@ function Default(): React.ReactElement {
           color: 'orange',
         }}
         itemStyle={{
-          list: {
-            shadowOffset: { width: 0, height: 5 },
-          },
-          defaultItem: {
-            color: 'grey',
-          },
-          selectedItem: {
-            color: 'black',
-          },
+          color: 'grey',
+        }}
+        selectedItemStyle={{
+          color: 'black',
         }}
         placeholder={'select'}
         onClick={action('Clicked')}
