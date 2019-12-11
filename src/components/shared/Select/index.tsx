@@ -1,4 +1,5 @@
 import {
+  Dimensions,
   FlatList,
   Image,
   ListRenderItemInfo,
@@ -6,7 +7,6 @@ import {
   StyleProp,
   TextStyle,
   TouchableOpacity,
-  View,
   ViewStyle,
 } from 'react-native';
 import { IC_ARR_DOWN, IC_ARR_UP } from '../Icons';
@@ -14,6 +14,9 @@ import React, { ReactElement, useCallback, useState } from 'react';
 import styled, { DefaultTheme, css } from 'styled-components/native';
 
 import { FlattenSimpleInterpolation } from 'styled-components';
+
+const SCREEN_HEIGHT = Dimensions.get('screen').height;
+const DEFAULT_LIST_HEIGHT = 200;
 
 export enum ThemeEnum {
   disabled = 'disabled',
@@ -239,6 +242,14 @@ const SelectList = styled(FlatList as new () => FlatList<Item>)`
   padding-top: 8px;
 `;
 
+const ScreenCloseView = styled.TouchableOpacity`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+`;
+
 const RootCloseView = styled.TouchableOpacity`
   width: 100%;
 `;
@@ -300,7 +311,9 @@ function Select(props: Props): React.ReactElement {
   const getLayout = (): void => {
     if (selectRef.current) {
       selectRef.current.measureInWindow((ox, oy, width, height) => {
-        setLayout({ ox, oy, width, height });
+        // Todo compare screen size;
+        const newY = SCREEN_HEIGHT - DEFAULT_LIST_HEIGHT < oy ? SCREEN_HEIGHT - DEFAULT_LIST_HEIGHT : oy;
+        setLayout({ ox, oy: newY, width, height });
       });
     }
   };
@@ -314,6 +327,7 @@ function Select(props: Props): React.ReactElement {
   const handleSelect = (item: Item): void => {
     onSelect(item);
     setListOpen(false);
+    if (onDismiss) onDismiss();
   };
 
   const defaultTheme = disabled ? 'disabled' : !theme ? 'none' : theme;
@@ -399,18 +413,20 @@ function Select(props: Props): React.ReactElement {
         }}
         transparent={true}
       >
+        <ScreenCloseView onPress={toggleList}/>
         <SelectListView
           style={{
             shadowOffset: { width: 0, height: 5 },
             top: layout.oy,
             left: layout.ox,
             width: layout.width,
+            height: DEFAULT_LIST_HEIGHT,
           }}
         >
           <RootCloseView
             onPress={toggleList}
             style={{ height: layout.height }}
-          ></RootCloseView>
+          />
           <SelectList
             style={itemStyle}
             testID={`${testID}-${TESTID.SELECTLIST}`}
